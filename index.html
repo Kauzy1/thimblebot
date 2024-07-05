@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR THIMBLES - Jogo de Acertar Copos</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .top-half {
+            flex: 0.5; /* Ajuste do tamanho da parte superior */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .bottom-half {
+            flex: 1.5; /* Ajuste do tamanho da parte inferior */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0); /* Gradiente azul */
+        }
+        .cups-container {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+        .cup {
+            width: 100px;
+            height: 150px;
+            background: url('images/cup.png') no-repeat center;
+            background-size: contain;
+            position: relative;
+        }
+        .ball {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .button-container {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .identify-button {
+            background-color: #f1c40f; /* Amarelo */
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        .wait-button {
+            background-color: #3498db; /* Azul */
+            display: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .wait-button.show {
+            display: block;
+            transform: translateY(-10px); /* Animação para cima */
+        }
+        .wait-button:hover {
+            background-color: #2980b9; /* Azul escurecido no hover */
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-half">
+        <img src="images/logo.png" alt="Logo MR THIMBLES" width="150">
+        <p>Identifique o copo onde está a bolinha e use o sinal para jogar no site abaixo!</p>
+        <div class="cups-container">
+            <div class="cup" id="cup1"></div>
+            <div class="cup" id="cup2"></div>
+            <div class="cup" id="cup3"></div>
+        </div>
+        <div class="button-container">
+            <button id="identifyButton" class="identify-button" onclick="identifySignal()">Identificar Sinal</button>
+            <button id="waitButton" class="wait-button" disabled>AGUARDE 15 SEGUNDOS PARA GERAR OUTRO SINAL</button>
+        </div>
+    </div>
+    <div class="bottom-half">
+        <iframe src="https://www.sambawin.com/c-HbQHCFKT?lang=pt"></iframe>
+    </div>
+
+    <script>
+        function identifySignal() {
+            // Remove any existing ball
+            document.querySelectorAll('.ball').forEach(ball => ball.remove());
+            
+            // Randomly select a cup
+            let randomCup = Math.floor(Math.random() * 3) + 1;
+            let selectedCup = document.getElementById(`cup${randomCup}`);
+            
+            // Check if the cup already has a ball
+            while (selectedCup.querySelector('.ball')) {
+                randomCup = Math.floor(Math.random() * 3) + 1;
+                selectedCup = document.getElementById(`cup${randomCup}`);
+            }
+            
+            // Create a new ball
+            const ball = document.createElement('div');
+            ball.classList.add('ball');
+            
+            // Add the ball to the selected cup
+            selectedCup.appendChild(ball);
+
+            // Disable the identify button and show wait button for 15 seconds
+            const identifyButton = document.getElementById('identifyButton');
+            const waitButton = document.getElementById('waitButton');
+
+            identifyButton.disabled = true;
+            identifyButton.style.display = 'none';
+            waitButton.classList.add('show');
+
+            let countdown = 15;
+            waitButton.textContent = `AGUARDE ${countdown} SEGUNDOS PARA GERAR OUTRO SINAL`;
+            const interval = setInterval(() => {
+                countdown--;
+                waitButton.textContent = `AGUARDE ${countdown} SEGUNDOS PARA GERAR OUTRO SINAL`;
+                if (countdown === 0) {
+                    clearInterval(interval);
+                    identifyButton.disabled = false;
+                    identifyButton.style.display = 'block';
+                    waitButton.classList.remove('show');
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
